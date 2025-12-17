@@ -1,4 +1,4 @@
-package org.author.demo.servletpractice;
+package org.author.demo.servletpractice.servlets;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -10,7 +10,6 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.concurrent.atomic.AtomicInteger;
 
 @WebServlet("/api/webhook")
 public class PolyglotServlet extends HttpServlet {
@@ -18,6 +17,9 @@ public class PolyglotServlet extends HttpServlet {
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+        String userRole = (String) req.getAttribute("user_role");
+        Long requestId = (Long) req.getAttribute("request_id");
+
         String contentTypeHeaderValue = req.getHeader("content-type");
 
         if (contentTypeHeaderValue != null) {
@@ -30,7 +32,7 @@ public class PolyglotServlet extends HttpServlet {
                 if (node.has("id")) {
                     long id = node.get("id").asLong();
                     res.setStatus(200);
-                    res.getWriter().print("Processed ID: " + id);
+                    res.getWriter().print("Processed ID: " + id + " (Role:" + userRole);
                 } else {
                     res.setStatus(400);
                     res.setHeader("Content-Type", "application/json");
@@ -39,7 +41,7 @@ public class PolyglotServlet extends HttpServlet {
             } else if (isBodyForm) {
                 String idValue = req.getParameter("id");
                 res.setStatus(200);
-                res.getWriter().print("Processed ID: " + idValue);
+                res.getWriter().print("Processed ID: " + idValue + " (Role:" + userRole);
             }
         }
     }
